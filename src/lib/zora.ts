@@ -12,26 +12,24 @@ const networkInfo = {
   chain: ZDKChain.Mainnet,
 }
 
-const API_ENDPOINT = 'https://api.zora.co/graphql'
 const args = {
-  endPoint: API_ENDPOINT,
+  endPoint: 'https://api.zora.co/graphql',
   networks: [networkInfo],
   apiKey: process.env.API_KEY,
 }
 
 const zdk = new ZDK(args)
 
-type Tokens = TokensQuery['tokens']
+export type Tokens = TokensQuery['tokens']
+export type Nodes = Tokens['nodes']
 
-export async function getAllNfts(contractAddress: string) {
-  const allNfts: Tokens['nodes'] = new Array()
+export async function getAllNfts(collectionAddresses: string[]) {
+  const allNfts: Nodes = new Array()
   let cursor = null
 
   while (true) {
     const res = await zdk.tokens({
-      where: {
-        collectionAddresses: [contractAddress],
-      },
+      where: { collectionAddresses },
       sort: {
         sortKey: 'TOKEN_ID' as TokenSortKey,
         sortDirection: 'DESC' as SortDirection,
