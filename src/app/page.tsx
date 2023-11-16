@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 import Client from '@/app/client'
-import { getAllNfts } from '@/lib/zora'
+import { getAllNfts } from '@/lib/zora/functions'
 
 export const metadata: Metadata = {
   title: 'Design Everydays by 0xdesigner.eth',
@@ -10,7 +10,8 @@ export const metadata: Metadata = {
 }
 
 export default async function Page() {
-  const nfts = await getAllNfts(['0x5908eb01497b5d8e53c339ea0186050d487c8d0c'])
+  const contractAddress = '0x5908eb01497b5d8e53c339ea0186050d487c8d0c'
+  const nfts = await getAllNfts(contractAddress)
 
   return <Client nfts={nfts} />
 }

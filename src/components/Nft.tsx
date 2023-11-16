@@ -1,34 +1,42 @@
 import Link from 'next/link'
 
-import { Nodes } from '@/lib/zora'
+import type { Token } from '@/lib/zora/types'
 
-export function Nft({ token: nft, index }: { token: Nodes[0]; index: number }) {
+export function Nft({ token: nft, index }: { token: Token; index: number }) {
   return (
     <div
-      key={nft.token.tokenId}
+      key={nft.token_id}
       className="group relative overflow-hidden rounded-lg transition-all duration-300 hover:border-2 hover:border-blue-400"
     >
       <Link
         className="absolute inset-0 z-10"
-        href={`https://zora.co/collect/eth:${nft.token.collectionAddress}/${nft.token.tokenId}`}
+        href={
+          nft.mintable.is_active
+            ? `https://zora.co/collect/eth:${nft.collection_address}/${nft.token_id}`
+            : `https://opensea.io/assets/ethereum/${nft.collection_address}/${nft.token_id}`
+        }
       >
         <span className="sr-only">View NFT</span>
       </Link>
 
       <div className="aspect-square">
         <img
-          alt={nft.token.name || 'NFT'}
-          className="h-full w-full object-cover"
+          alt={nft.mintable.token_name}
+          className="h-full w-full bg-gray-100 object-cover"
           loading={index < 8 ? 'eager' : 'lazy'}
-          src={(nft.token.image?.mediaEncoding as any)?.poster || ''} // the `poster` type isn't available in the zdk for some reason
+          src={nft.media?.image_preview.encoded_preview}
         />
       </div>
 
       <div className="bg-white p-4 ">
         <h3 className="text-lg font-semibold md:text-xl">
-          {nft.token.name || 'Unnamed NFT'}
+          {nft.mintable.token_name}
         </h3>
-        <p className="text-sm text-zinc-500">#{nft.token.tokenId}</p>
+        <p className="text-sm text-zinc-500">
+          {nft.mintable.is_active
+            ? `Mint for ${nft.mintable.cost.native_price.decimal} ${nft.mintable.cost.native_price.currency.name}`
+            : 'View on OpenSea'}
+        </p>
       </div>
     </div>
   )

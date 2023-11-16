@@ -4,53 +4,75 @@ import { useMemo, useState } from 'react'
 
 import { Nft } from '@/components/Nft'
 import { Select, SelectOption } from '@/components/Select'
-import { Nodes } from '@/lib/zora'
+import type { Tokens } from '@/lib/zora/types'
 
 // TODO: improve sorting and filtering
 const sortOptions: SelectOption[] = [
   { value: 'recent', label: 'Recent' },
-  // { value: 'lowest', label: 'Lowest Mint Price' },
-  // { value: 'highest', label: 'Highest Mint Price' },
+  { value: 'lowest', label: 'Lowest Mint Price' },
+  { value: 'highest', label: 'Highest Mint Price' },
 ]
 
 const filterOptions: SelectOption[] = [
   { value: 'all', label: 'All' },
   { value: 'available', label: 'Available' },
-  // { value: 'free', label: 'Free Mints' },
+  { value: 'secondary', label: 'Secondary' },
+  { value: 'free', label: 'Free Mints' },
 ]
 
-export default function Client({ nfts }: { nfts: Nodes }) {
+export default function Client({ nfts }: { nfts: Tokens }) {
   const [sort, setSort] = useState('recent')
   const [filter, setFilter] = useState('all')
 
   const sortedNfts = useMemo(() => {
+    let filteredNfts = nfts
+
+    // ----- START FILTERS ----- //
     if (filter === 'available') {
-      return nfts.filter((nft) => !nft.token.mintInfo)
+      filteredNfts = nfts.filter((nft) => nft.mintable.is_active)
     }
 
-    if (sort === 'recent') {
-      return nfts
+    if (filter === 'secondary') {
+      filteredNfts = nfts.filter((nft) => !nft.mintable.is_active)
     }
 
+    if (filter === 'free') {
+      filteredNfts = nfts.filter(
+        (nft) => nft.mintable.cost.native_price.decimal === 0
+      )
+    }
+    // ----- END FILTERS ----- //
+
+    // ----- START SORTS ----- //
     if (sort === 'lowest') {
-      return nfts.sort((a, b) => {
-        const aPrice = a.token.mintInfo?.price?.nativePrice.decimal || 0
-        const bPrice = b.token.mintInfo?.price?.nativePrice.decimal || 0
+      filteredNfts.sort((a, b) => {
+        const aPrice = a.mintable.cost.native_price.decimal
+        const bPrice = b.mintable.cost.native_price.decimal
 
         return aPrice - bPrice
       })
     }
 
     if (sort === 'highest') {
-      return nfts.sort((a, b) => {
-        const aPrice = a.token.mintInfo?.price?.nativePrice.decimal || 0
-        const bPrice = b.token.mintInfo?.price?.nativePrice.decimal || 0
+      filteredNfts.sort((a, b) => {
+        const aPrice = a.mintable.cost.native_price.decimal
+        const bPrice = b.mintable.cost.native_price.decimal
 
         return bPrice - aPrice
       })
     }
 
-    return nfts
+    if (sort === 'recent') {
+      filteredNfts = nfts.sort((a, b) => {
+        const aTokenId = Number(a.token_id)
+        const bTokenId = Number(b.token_id)
+
+        return bTokenId - aTokenId
+      })
+    }
+    // ----- END SORTS ----- //
+
+    return filteredNfts
   }, [filter, sort])
 
   return (
