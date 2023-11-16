@@ -62,7 +62,7 @@ export default function Client({ nfts }: { nfts: Tokens }) {
     }
 
     if (sort === 'recent') {
-      filteredNfts = nfts.sort((a, b) => {
+      filteredNfts = filteredNfts.sort((a, b) => {
         const aTokenId = Number(a.token_id)
         const bTokenId = Number(b.token_id)
 
