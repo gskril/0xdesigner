@@ -6,7 +6,6 @@ import { Nft } from '@/components/Nft'
 import { Select, SelectOption } from '@/components/Select'
 import type { Tokens } from '@/lib/zora/types'
 
-// TODO: improve sorting and filtering
 const sortOptions: SelectOption[] = [
   { value: 'recent', label: 'Recent' },
   { value: 'lowest', label: 'Lowest Mint Price' },
@@ -45,7 +44,7 @@ export default function Client({ nfts }: { nfts: Tokens }) {
 
     // ----- START SORTS ----- //
     if (sort === 'lowest') {
-      filteredNfts.sort((a, b) => {
+      filteredNfts = filteredNfts.sort((a, b) => {
         const aPrice = a.mintable.cost.native_price.decimal
         const bPrice = b.mintable.cost.native_price.decimal
 
@@ -54,7 +53,7 @@ export default function Client({ nfts }: { nfts: Tokens }) {
     }
 
     if (sort === 'highest') {
-      filteredNfts.sort((a, b) => {
+      filteredNfts = filteredNfts.sort((a, b) => {
         const aPrice = a.mintable.cost.native_price.decimal
         const bPrice = b.mintable.cost.native_price.decimal
 

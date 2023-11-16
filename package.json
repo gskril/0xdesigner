@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@rainbow-me/rainbowkit": "^1.1.1",
-    "@zoralabs/zdk": "^2.4.0",
     "next": "13.5.4",
     "react": "^18",
     "react-dom": "^18",

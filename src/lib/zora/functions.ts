@@ -1,7 +1,4 @@
-import type { SortDirection, TokenSortKey } from '@zoralabs/zdk'
-
-import { zdk } from './client'
-import type { DiscoverTokensResponse, Nodes } from './types'
+import type { DiscoverTokensResponse } from './types'
 
 export async function getAllNfts(collectionAddress: string) {
   let offset = 0
@@ -24,38 +21,4 @@ export async function getAllNfts(collectionAddress: string) {
   }
 
   return allNfts
-}
-
-export async function getAllNftsFromZdk(collectionAddresses: string[]) {
-  const allNfts: Nodes = new Array()
-  let cursor = null
-
-  while (true) {
-    const res = await zdk.tokens({
-      where: { collectionAddresses },
-      sort: {
-        sortKey: 'TOKEN_ID' as TokenSortKey,
-        sortDirection: 'DESC' as SortDirection,
-      },
-      pagination: {
-        limit: 200,
-        after: cursor,
-      },
-      includeFullDetails: true,
-    })
-
-    allNfts.push(...res.tokens.nodes)
-
-    if (!res.tokens.pageInfo.hasNextPage) {
-      break
-    }
-
-    cursor = res.tokens.pageInfo.endCursor
-  }
-
-  const sortedNfts = allNfts.sort((a, b) => {
-    return Number(a.token.tokenId) < Number(b.token.tokenId) ? 1 : -1
-  })
-
-  return sortedNfts
 }

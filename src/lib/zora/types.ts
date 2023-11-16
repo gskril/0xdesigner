@@ -1,8 +1,3 @@
-// import type { TokensQuery } from '@zoralabs/zdk'
-
-// export type Tokens = TokensQuery['tokens']
-// export type Nodes = Tokens['nodes']
-
 export type DiscoverTokensResponse = {
   results: Array<{
     chain_name: string
